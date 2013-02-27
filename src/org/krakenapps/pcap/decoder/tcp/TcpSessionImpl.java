@@ -42,7 +42,7 @@ public class TcpSessionImpl implements TcpSession {
 	private WaitQueue clientQueue;
 	private WaitQueue serverQueue;
 
-	private ApplicationLayerMapper l7Mapper;
+	public ApplicationLayerMapper l7Mapper;
 
 	private int packetCountAfterFin = 0;
 	private int firstFinSeq = -1;
@@ -194,7 +194,7 @@ public class TcpSessionImpl implements TcpSession {
 		serverSent.addLast(data);
 	}
 
-	public void checkReassemble(){
+	public boolean checkReassemble(){
 		TcpLinkedList temp = StoreDataFromServer.pnext;
 		boolean check  = true;
 		
@@ -208,7 +208,11 @@ public class TcpSessionImpl implements TcpSession {
 			temp = temp.pnext;
 		}
 		if ( check == true)
+		{
 			System.out.println("Reassemble completed. No error!");
+			return true;
+		}
+		return false;
 	}
 	
 	
@@ -223,8 +227,11 @@ public class TcpSessionImpl implements TcpSession {
 			temp.data = data;
 			temp.Seq = Seq;
 			temp.LengthOfData = data.readableBytes();
-			temp.pnext = null;	
+			temp.pnext = null;
+			temp.key = key;	
+			temp.direction = TcpDirection.ToClient;
 			StoreDataFromServer.pnext = temp;
+			
 			return;
 		}
 		
@@ -241,6 +248,8 @@ public class TcpSessionImpl implements TcpSession {
 					temp2.LengthOfData = LengthOfData;
 					temp2.pnext = temp.pnext;
 					temp2.data = data;
+					temp2.key = key;	
+					temp2.direction = TcpDirection.ToClient;
 					temp.pnext = temp2;
 					return;
 				}
@@ -274,6 +283,8 @@ public class TcpSessionImpl implements TcpSession {
 				temp2.LengthOfData = LengthOfData;
 				temp2.pnext = temp.pnext;
 				temp2.data = data;
+				temp2.key = key;	
+				temp2.direction = TcpDirection.ToClient;
 				temp.pnext = temp2;
 				return;
 			}
@@ -287,6 +298,8 @@ public class TcpSessionImpl implements TcpSession {
 				temp2.Seq = Seq;
 				temp2.LengthOfData = LengthOfData;
 				temp2.data = data;
+				temp2.key = key;	
+				temp2.direction = TcpDirection.ToClient;
 				temp2.pnext = temp.pnext;
 				temp.pnext = temp2;
 				return;
@@ -299,16 +312,20 @@ public class TcpSessionImpl implements TcpSession {
 				temp2.LengthOfData = LengthOfData;
 				temp2.pnext = temp.pnext;
 				temp2.data = data;
+				temp2.key = key;	
+				temp2.direction = TcpDirection.ToClient;
 				temp.pnext = temp2;
 				return;
 			}
 				
 		}
 		
-		l7Mapper.sendToApplicationLayer(protocol, key, TcpDirection.ToClient, data);
+		
+	//	l7Mapper.sendToApplicationLayer(protocol, key, TcpDirection.ToClient, data);
 	}
 	
 	public void pushToServer(int Seq, Buffer data) { 
+		
 		
 		TcpLinkedList temp = StoreDataFromClient.pnext;
 		int LengthOfData = data.readableBytes();
@@ -319,6 +336,8 @@ public class TcpSessionImpl implements TcpSession {
 			temp.Seq = Seq;
 			temp.LengthOfData = data.readableBytes();
 			temp.pnext = null;		
+			temp.key = key;	
+			temp.direction = TcpDirection.ToServer;
 			StoreDataFromClient.pnext = temp;
 			return;
 		}
@@ -336,6 +355,8 @@ public class TcpSessionImpl implements TcpSession {
 					temp2.LengthOfData = LengthOfData;
 					temp2.pnext = temp.pnext;
 					temp2.data = data;
+					temp2.key = key;	
+					temp2.direction = TcpDirection.ToServer;
 					temp.pnext = temp2;
 					return;
 				}
@@ -368,6 +389,8 @@ public class TcpSessionImpl implements TcpSession {
 				temp2.LengthOfData = LengthOfData;
 				temp2.pnext = temp.pnext;
 				temp2.data = data;
+				temp2.key = key;	
+				temp2.direction = TcpDirection.ToServer;
 				temp.pnext = temp2;
 				return;
 			}
@@ -382,15 +405,27 @@ public class TcpSessionImpl implements TcpSession {
 				temp2.LengthOfData = LengthOfData;
 				temp2.data = data;
 				temp2.pnext = temp.pnext;
+				temp2.key = key;	
+				temp2.direction = TcpDirection.ToServer;
 				temp.pnext = temp2;
 				return;
 			}
 		}
+		
+		
 	
-		l7Mapper.sendToApplicationLayer(protocol, key, TcpDirection.ToServer, data);
+		//l7Mapper.sendToApplicationLayer(protocol, key, TcpDirection.ToServer, data);
 		
 		
 	}
+	
+	public void sendToAppLayer(TcpSessionKey key, TcpDirection direction, Buffer data)
+	{
+		l7Mapper.sendToApplicationLayer(protocol, key, direction, data);
+
+		
+	}
+	
 
 	public void pushToClientSack(Buffer data) {
 		l7Mapper.sendToApplicationLayer(protocol, key, TcpDirection.ToServer, data);

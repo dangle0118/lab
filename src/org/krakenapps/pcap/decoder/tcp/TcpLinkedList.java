@@ -8,6 +8,8 @@ public class TcpLinkedList {
 	public Buffer data;
 	public int Seq;
 	public int LengthOfData;
+	public TcpSessionKey key;
+	public TcpDirection direction;
 	
 	
 	

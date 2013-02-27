@@ -29,7 +29,7 @@ public class lab {
 	
 	
 	public static void main(String[] args) throws IOException {
-		PcapFileRunner runner = new PcapFileRunner(new File("evidence02.pcap"));
+		PcapFileRunner runner = new PcapFileRunner(new File("TCP1.pcap"));
 		HttpDecoder http = new HttpDecoder();
 		FtpDecoder ftp = new FtpDecoder(runner.getTcpDecoder().getProtocolMapper());
 		MsnDecoder msn = new MsnDecoder();
