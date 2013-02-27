@@ -29,7 +29,7 @@ public class lab {
 	
 	
 	public static void main(String[] args) throws IOException {
-		PcapFileRunner runner = new PcapFileRunner(new File("TCP1.pcap"));
+		PcapFileRunner runner = new PcapFileRunner(new File("evidence03.pcap"));
 		HttpDecoder http = new HttpDecoder();
 		FtpDecoder ftp = new FtpDecoder(runner.getTcpDecoder().getProtocolMapper());
 		MsnDecoder msn = new MsnDecoder();
@@ -215,13 +215,15 @@ public class lab {
 			}
 			@Override
 			public void onResponse(HttpRequest req, HttpResponse resp, InetAddress ClientIp, InetAddress ServerIp) {
-				
+		//		if ( req != null )
+				{
 				try {
-			        String[] tokens = req.getURL().toString().split("/");
-			        String fileName = tokens[tokens.length - 1];
+					
+						String[] tokens = req.getURL().toString().split("/");
+						String fileName = tokens[tokens.length - 1];
 
 			        // extract all .jpg files from http stream!	    
-				if (fileName.endsWith(".jpg")) {
+						if (fileName.endsWith(".jpg")) {
 					InputStream is = resp.getMimeMessage().getInputStream();
 					System.out.println("get file name: " + fileName);
 					FileExtractor.extract(new File(fileName), is);
@@ -232,8 +234,9 @@ public class lab {
 
 			System.out.println("Client: " + ClientIp + "\nServer: " + ServerIp );
 				System.out.println(req.getURL());
-		
-			}
+				}
+				}
+			
 			@Override
 			public void onMultipartData(Buffer buffer){}
 		});

@@ -16,7 +16,7 @@ public class TcpPacketHandler {
 		if (serverState.compareTo(TcpState.ESTABLISHED) < 0) {
 			session.doEstablish(sessionTable, session, packet, stateUpdater);
 		} else {
-		//	TcpPacketReassembler.reassemble(session, packet, stateUpdater);
+			TcpPacketReassembler.reassemble(session, packet, stateUpdater);
 			stateUpdater.updateState(session, packet);
 			
 			if(session.getClientState() == TcpState.CLOSED && session.getServerState() == TcpState.CLOSED) 
@@ -25,6 +25,7 @@ public class TcpPacketHandler {
 				System.out.println("Finish communication. Begin Reassemble!");
 				if (session.checkReassemble())
 				{
+			/*
 					TcpLinkedList temp = session.StoreDataFromClient.pnext;
 					while (temp != null )
 					{
@@ -37,9 +38,10 @@ public class TcpPacketHandler {
 						session.sendToAppLayer(temp.key, temp.direction, temp.data);
 						temp = temp.pnext;						
 					}
-					
-					session.close(sessionTable, session, packet);
+				*/	
 				}
+					session.close(sessionTable, session, packet);
+				
 			}
 		}
 	}

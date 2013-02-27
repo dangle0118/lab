@@ -218,7 +218,7 @@ public class TcpSessionImpl implements TcpSession {
 	
 	public void pushToClient(int Seq,Buffer data) { 
 		
-		
+/*		
 		TcpLinkedList temp = StoreDataFromServer.pnext;
 		int LengthOfData = data.readableBytes();
 		if ( temp == null)
@@ -319,13 +319,14 @@ public class TcpSessionImpl implements TcpSession {
 			}
 				
 		}
+		*/
 		
-		
-	//	l7Mapper.sendToApplicationLayer(protocol, key, TcpDirection.ToClient, data);
+		l7Mapper.sendToApplicationLayer(protocol, key, TcpDirection.ToClient, data);
 	}
 	
 	public void pushToServer(int Seq, Buffer data) { 
-		
+
+		/*
 		
 		TcpLinkedList temp = StoreDataFromClient.pnext;
 		int LengthOfData = data.readableBytes();
@@ -412,9 +413,9 @@ public class TcpSessionImpl implements TcpSession {
 			}
 		}
 		
-		
+		*/
 	
-		//l7Mapper.sendToApplicationLayer(protocol, key, TcpDirection.ToServer, data);
+		l7Mapper.sendToApplicationLayer(protocol, key, TcpDirection.ToServer, data);
 		
 		
 	}
