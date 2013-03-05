@@ -119,7 +119,7 @@ public class TcpDecoder implements IpProcessor, Ipv6Processor {
 			
 			*/
 			packetHandler.handle(sessionTable, session, pkt);
-			System.out.println(pkt.toString());
+	//		System.out.println(pkt.toString());
 			
 			
 		segmentCallbacks.fireReceiveCallbacks(session, pkt);

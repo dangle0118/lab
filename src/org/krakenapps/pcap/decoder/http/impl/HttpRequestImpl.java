@@ -54,12 +54,14 @@ public class HttpRequestImpl implements HttpRequest {
 
 	private Map<String, String> headers;
 	private Map<String, String> parameters;
-
+	
 	// multipart variable
 	private byte[] endBoundary;
 
 	private Map<String, InputStream> files;
 
+	public boolean check; 
+	
 	public HttpRequestImpl(InetSocketAddress client, InetSocketAddress server) {
 		this.client = client;
 		this.server = server;
@@ -67,6 +69,7 @@ public class HttpRequestImpl implements HttpRequest {
 		headers = new HashMap<String, String>();
 		parameters = new HashMap<String, String>();
 		files = new HashMap<String, InputStream>();
+		check = false;
 	}
 
 	@Override
