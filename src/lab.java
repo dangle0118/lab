@@ -5,6 +5,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 
+
 import org.krakenapps.mime.*;
 import org.krakenapps.pcap.decoder.ftp.FtpDecoder;
 import java.io.IOException;
@@ -29,7 +30,11 @@ public class lab {
 	
 	
 	public static void main(String[] args) throws IOException {
-		PcapFileRunner runner = new PcapFileRunner(new File("exp4.pcap"));
+		
+		
+		
+		
+		PcapFileRunner runner = new PcapFileRunner(new File("exp9.pcap"));
 		HttpDecoder http = new HttpDecoder();
 		FtpDecoder ftp = new FtpDecoder(runner.getTcpDecoder().getProtocolMapper());
 		MsnDecoder msn = new MsnDecoder();
@@ -213,6 +218,7 @@ public class lab {
 		http.register(new HttpProcessor() {
 			public String host_request = "";
 			public String referer_request = "";
+			public String cookie_request = "";
 			public void onRequest(HttpRequest req, InetAddress ClientIp, InetAddress ServerIp) {
 				if ( !host_request.equals(req.getHeader("Host")))
 				{
@@ -226,8 +232,17 @@ public class lab {
 					referer_request = req.getHeader("Referer");
 					System.out.println("Referer: " + referer_request);
 				}
+				if ( (!cookie_request.equals(req.getHeader("Cookie"))) && ( req.getHeader("Cookie") != null))
+				{
+					cookie_request = req.getHeader("Cookie");
+					String[] token = cookie_request.toString().split(";");
+					
+					System.out.print("Client sent Cookie: ");
+					printCookie(token);
+					System.out.println("\n");
+				}
 				
-				//System.out.println("URL: " + req.getURL());
+			//	System.out.println("URL: " + req.getURL());
 				} 
 			@Override
 			public void onResponse(HttpRequest req, HttpResponse resp, InetAddress ClientIp, InetAddress ServerIp) {
@@ -239,23 +254,28 @@ public class lab {
 					
 						temp = resp.getHeader("Set-Cookie");
 						
-						
+				if ( req != null)
+				{	
 						String[] tokens = req.getURL().toString().split("/");
 						String fileName = tokens[tokens.length - 1];
-
+												
 			        // extract all .jpg files from http stream!	    
-						if (fileName.endsWith(".jpeg")) {
+						if (fileName.endsWith(".jpg")) {
 					InputStream is = resp.getMimeMessage().getInputStream();
 					System.out.println("get file name: " + fileName);
 					FileExtractor.extract(new File(fileName), is);
+					}
 				}
 			    } catch (IOException e) {
 			    } catch (MessagingException e) {
 			    }
 				if (temp != null)
 				{
+					String[] token = temp.toString().split(";");
 					//System.out.println("Client: " + ClientIp + "\nServer: " + ServerIp );
-					System.out.println("Set Cookie: " +temp);				
+					System.out.print("Set Cookie: ");
+					printCookie(token);
+					System.out.println("\n");
 					
 				}
 				}
@@ -273,6 +293,75 @@ public class lab {
 		runner.setTcpProcessor(Protocol.FTP,  ftp);
 		
 		runner.run();
+		
+		
+	}
+	
+	public static void printCookie(String[] token)
+	{
+		for (int i = 0; i < token.length; ++i)
+		{
+			String temp = "userid";
+			switch(temp)
+			{
+			case "userid":
+				temp = "userid";
+				if (token[i].contains(temp))
+				{
+					System.out.print(token[i] + "; ");
+					break;					
+				}
+			case "expires":
+				temp = "expires";
+				if (token[i].contains(temp))
+				{
+					System.out.print(token[i] + "; ");
+					break;					
+				}
+			case "path":
+				temp = "userid";
+				if (token[i].contains(temp))
+				{
+					System.out.print(token[i] + "; ");
+					break;					
+				}
+			case "domain":
+				temp = "userid";
+				if (token[i].contains(temp))
+				{
+					System.out.print(token[i] + "; ");
+					break;					
+				}
+			case "vbsessionhash":
+				temp = "vbsessionhash";
+				if (token[i].contains(temp))
+				{
+					System.out.print(token[i] + "; ");
+					break;					
+				}
+			case "vblastactivity":
+				temp = "vblastactivity";
+				if (token[i].contains(temp))
+				{
+					System.out.print(token[i] + "; ");
+					break;					
+				}
+			case "vbpassword":
+				temp = "vbpassword";
+				if (token[i].contains(temp))
+				{
+					System.out.print(token[i] + "; ");
+					break;					
+				}
+			case "username":
+				temp = "username";
+				if (token[i].contains(temp))
+				{
+					System.out.print(token[i] + "; ");
+					break;					
+				}				
+			}				
+		}		
 	}
 	
 	
